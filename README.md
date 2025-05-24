@@ -7,6 +7,8 @@ This project sets up a scalable, secure, and observable infrastructure on Google
 **Goal**: Deploy and manage multi-environment infrastructure with autoscaling, security, and observability best practices.
 
 ---
+## Architecture Diagram
+![Cloud Architecture](./docs/architecture-diagram.png)
 
 ## Project Scope
 
