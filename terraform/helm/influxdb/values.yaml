@@ -1,0 +1,12 @@
+# Example values for InfluxDB Helm chart
+image:
+  repository: influxdb
+  tag: 2.7.0
+persistence:
+  enabled: true
+  storageClass: standard # Or your custom storage class
+  size: 100Gi
+service:
+  type: ClusterIP # Internal
+  port: 8086
+# Other InfluxDB specific configurations (e.g., admin user, organization)

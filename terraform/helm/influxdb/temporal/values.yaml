@@ -1,0 +1,24 @@
+# Example values for Temporal Helm chart
+# This assumes a community-maintained Temporal Helm chart.
+# Official Temporal deployment documentation might have different settings.
+server:
+  replicas: 1 # For stateful, potentially 1 for simplicity in dev/staging, then scale up
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: 200Gi
+  service:
+    type: ClusterIP # Or LoadBalancer for internal
+    port: 7233
+worker:
+  replicas: 3
+  image: your-temporal-worker-image:latest
+  # Worker specific configurations, e.g., task queues
+# Database connection details (connecting to Cloud SQL)
+database:
+  driver: "postgresql"
+  host: "my-app-db-private-ip"
+  port: 5432
+  user: "app_user"
+  password: "supersecretpassword" # Consider using Kubernetes secrets or Secret Manager instead
+  name: "temporal"

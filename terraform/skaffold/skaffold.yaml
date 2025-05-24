@@ -1,0 +1,69 @@
+# Defines how Skaffold builds and deploys your applications across different environments.
+apiVersion: skaffold/v4beta7
+kind: Config
+build:
+  artifacts:
+    - image: gcr.io/[YOUR_PROJECT_ID]/api-server
+      context: ./api-server # Path to your API server Dockerfile
+      docker:
+        dockerfile: Dockerfile
+    - image: gcr.io/[YOUR_PROJECT_ID]/ai-server
+      context: ./ai-server
+      docker:
+        dockerfile: Dockerfile
+    - image: gcr.io/[YOUR_PROJECT_ID]/backend-server
+      context: ./backend-server
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+      - k8s/*.yaml # All common Kubernetes manifests
+profiles:
+  - name: dev
+    build:
+      local:
+        push: false # Don't push images for local dev
+    deploy:
+      kubectl:
+        manifests:
+          - k8s/*.yaml
+    portForward: # Enable port-forwarding for local access
+      - resourceType: Service
+        resourceName: api-server-service
+        port: 80
+        localPort: 8080
+      # Add more for other services as needed
+  - name: staging
+    build:
+      googleCloudBuild: {} # Use Cloud Build for staging/prod
+    deploy:
+      kubectl:
+        manifests:
+          - k8s/*.yaml
+        flags:
+          set:
+            # Override namespace for staging deployments
+            "kpt.dev/namespace": "staging"
+            # Example: smaller replicas for staging
+            "api-server.replicas": "1"
+    # No portForward in staging
+  - name: prod
+    build:
+      googleCloudBuild: {}
+    deploy:
+      kubectl:
+        manifests:
+          - k8s/*.yaml
+        flags:
+          set:
+            # Override namespace for production deployments
+            "kpt.dev/namespace": "production"
+            # Example: larger replicas for production
+            "api-server.replicas": "3"
+        # Example: Enable canary deployments for prod
+        # hooks:
+        #   after:
+        #     - exec:
+        #         command: ["/usr/bin/kubectl", "rollout", "status", "deployment/api-server"]
+        #         timeout: "5m"

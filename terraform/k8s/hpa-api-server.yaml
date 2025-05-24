@@ -1,0 +1,32 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-server-hpa
+  namespace: default # Or your application namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70 # Scale up when CPU utilization exceeds 70%
+  # - type: Resource # Example for memory
+  #   resource:
+  #     name: memory
+  #     target:
+  #       type: Utilization
+  #       averageUtilization: 80
+  # - type: Pods # Example for custom metrics (e.g., requests per second)
+  #   pods:
+  #     metric:
+  #       name: http_requests_total
+  #     target:
+  #       type: AverageValue
+  #       averageValue: "100" # Average 100 requests per pod
